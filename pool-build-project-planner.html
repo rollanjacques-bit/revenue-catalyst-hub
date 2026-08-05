@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pool Build Project Planner — Step-by-Step Checklist</title>
+<meta name="description" content="Free interactive checklist for planning a new pool build, from permits to first swim.">
+<style>
+  :root { --ink:#16261f; --paper:#f6f4ee; --deep:#0b3d3a; --water:#2f7d75; --sun:#d98e34; --line:#d8d3c4; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:'Iowan Old Style','Palatino Linotype',Georgia,serif; line-height:1.5; }
+  .wrap { max-width:760px; margin:0 auto; padding:48px 24px 80px; }
+  header { margin-bottom:32px; }
+  .eyebrow { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--water); font-weight:600; }
+  h1 { font-size:clamp(28px,5vw,42px); margin:10px 0 12px; line-height:1.1; color:var(--deep); }
+  .sub { font-size:17px; color:#4a564f; max-width:56ch; }
+
+  .progress-bar-wrap { background:#fff; border:1px solid var(--line); border-radius:4px; padding:20px 24px; margin-bottom:24px; display:flex; align-items:center; gap:16px; }
+  .progress-track { flex:1; height:8px; background:var(--paper); border-radius:4px; overflow:hidden; }
+  .progress-fill { height:100%; background:var(--water); width:0%; transition:width .3s ease; }
+  .progress-pct { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px; font-weight:600; color:var(--deep); white-space:nowrap; }
+
+  .phase { background:#fff; border:1px solid var(--line); border-radius:4px; margin-bottom:14px; overflow:hidden; }
+  .phase-head { padding:16px 22px; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--deep); background:var(--paper); border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
+  .phase-count { color:#8a9089; font-weight:400; letter-spacing:0; text-transform:none; }
+  .item { display:flex; align-items:flex-start; gap:12px; padding:14px 22px; border-bottom:1px dashed var(--line); }
+  .item:last-child { border-bottom:none; }
+  .item input[type=checkbox] { margin-top:3px; width:18px; height:18px; accent-color:var(--water); cursor:pointer; flex-shrink:0; }
+  .item label { font-size:15.5px; cursor:pointer; }
+  .item.checked label { color:#8a9089; text-decoration:line-through; }
+
+  .note { margin-top:24px; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px; color:#6b756e; background:#fff; border:1px solid var(--line); padding:14px 16px; border-radius:4px; border-left:3px solid var(--sun); }
+  .actions { margin-top:20px; display:flex; gap:10px; flex-wrap:wrap; }
+  button.reset, button.print { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px; padding:10px 16px; border-radius:4px; cursor:pointer; }
+  button.reset { background:none; border:1px solid var(--line); color:#6b756e; }
+  button.print { background:var(--deep); border:1px solid var(--deep); color:#fff; }
+  button.reset:hover { border-color:var(--water); }
+  button.print:hover { background:var(--water); }
+
+  footer { margin-top:40px; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:12px; color:#8a9089; text-align:center; }
+  .legal { margin-top:48px; padding-top:20px; border-top:1px solid var(--line); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:12.5px; color:#6b756e; line-height:1.6; }
+  .legal summary { cursor:pointer; font-size:12px; letter-spacing:.04em; color:#8a9089; list-style:none; }
+  .legal summary::-webkit-details-marker { display:none; }
+  .legal summary::after { content:" ▾"; }
+  .legal[open] summary::after { content:" ▴"; }
+  .legal h2 { font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--deep); font-family:inherit; margin:16px 0 10px; }
+  .legal p { margin:0 0 14px; }
+  .legal .company { color:var(--ink); font-weight:600; }
+
+  @media print {
+    .progress-bar-wrap, .actions, .legal { display:none; }
+    .item input[type=checkbox] { accent-color: #000; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Pool Build Project Planner</div>
+    <h1>Your pool build, step by step</h1>
+    <p class="sub">From first decision to first swim — check off each step as you go, and know exactly what's next.</p>
+  </header>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-track"><div class="progress-fill" id="fill"></div></div>
+    <div class="progress-pct" id="pct">0% complete</div>
+  </div>
+
+  <div id="phases"></div>
+
+  <div class="actions">
+    <button class="print" onclick="window.print()">Print / save as PDF</button>
+    <button class="reset" id="resetBtn">Reset checklist</button>
+  </div>
+
+  <div class="note">This planner is a general guide. Your builder's actual sequence, permit requirements, and timeline may vary by city and project — confirm specifics with your contractor.</div>
+
+  <details class="legal">
+    <summary>Disclaimer, privacy & about</summary>
+    <h2>Disclaimer</h2>
+    <p>This checklist is provided for general informational purposes only and does not represent a guaranteed timeline, contract, or scope of work. Actual project steps, sequencing, and permitting requirements vary by location and contractor. <span class="company">Koutoush Marketing LLC</span> makes no guarantee as to the completeness or accuracy of this checklist and accepts no liability for project delays or issues.</p>
+    <h2>Privacy</h2>
+    <p>Your checklist progress is saved only in your own browser on this device. Nothing you check here is collected, stored, or transmitted to <span class="company">Koutoush Marketing LLC</span> or any third party.</p>
+    <h2>About</h2>
+    <p>Published by <span class="company">Koutoush Marketing LLC</span>.</p>
+  </details>
+
+  <footer>General planning guide · confirm specifics with your pool contractor</footer>
+</div>
+
+<script>
+  const phases = [
+    { name: "1. Planning & design", items: [
+      "Set a budget range and financing plan",
+      "Decide pool type (vinyl, fiberglass, gunite, above-ground)",
+      "Choose size, shape, and placement in the yard",
+      "Get 2–3 quotes from licensed local builders",
+      "Check HOA rules if applicable"
+    ]},
+    { name: "2. Permits & prep", items: [
+      "Confirm setback and zoning requirements with your county",
+      "Builder pulls permits",
+      "Utility lines marked (call 811 or local equivalent)",
+      "Site access plan confirmed (equipment path, fencing, neighbor notice)"
+    ]},
+    { name: "3. Construction", items: [
+      "Excavation",
+      "Plumbing & electrical rough-in",
+      "Steel/structure or shell installation",
+      "Decking, coping, and patio work",
+      "Equipment installed (pump, filter, heater)"
+    ]},
+    { name: "4. Fill & startup", items: [
+      "Pool filled",
+      "Water balanced and tested",
+      "Equipment startup and walkthrough with builder",
+      "Safety equipment installed (fence, cover, alarms if required)"
+    ]},
+    { name: "5. After the build", items: [
+      "Register warranty with manufacturer/builder",
+      "Save startup chemical readings for reference",
+      "Set up a maintenance routine",
+      "Schedule first professional service check (30–60 days in)"
+    ]}
+  ];
+
+  const container = document.getElementById('phases');
+  let totalItems = 0;
+
+  phases.forEach((phase, pi) => {
+    totalItems += phase.items.length;
+    const phaseEl = document.createElement('div');
+    phaseEl.className = 'phase';
+    phaseEl.innerHTML = `<div class="phase-head"><span>${phase.name}</span><span class="phase-count" data-phase="${pi}">0/${phase.items.length}</span></div>`;
+    phase.items.forEach((text, ii) => {
+      const id = `p${pi}-i${ii}`;
+      const item = document.createElement('div');
+      item.className = 'item';
+      item.innerHTML = `<input type="checkbox" id="${id}"><label for="${id}">${text}</label>`;
+      phaseEl.appendChild(item);
+    });
+    container.appendChild(phaseEl);
+  });
+
+  const STORAGE_KEY = 'pool-planner-checked';
+  function load() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+  }
+  function save(state) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+  }
+
+  function updateProgress() {
+    const boxes = document.querySelectorAll('input[type=checkbox]');
+    const checked = [...boxes].filter(b => b.checked).length;
+    const pct = Math.round((checked / totalItems) * 100);
+    document.getElementById('fill').style.width = pct + '%';
+    document.getElementById('pct').textContent = pct + '% complete';
+
+    phases.forEach((phase, pi) => {
+      const phaseBoxes = document.querySelectorAll(`[id^="p${pi}-i"]`);
+      const phaseChecked = [...phaseBoxes].filter(b => b.checked).length;
+      document.querySelector(`.phase-count[data-phase="${pi}"]`).textContent = `${phaseChecked}/${phase.items.length}`;
+    });
+  }
+
+  const state = load();
+  document.querySelectorAll('input[type=checkbox]').forEach(box => {
+    if (state[box.id]) { box.checked = true; box.closest('.item').classList.add('checked'); }
+    box.addEventListener('change', () => {
+      const s = load();
+      s[box.id] = box.checked;
+      save(s);
+      box.closest('.item').classList.toggle('checked', box.checked);
+      updateProgress();
+    });
+  });
+  updateProgress();
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    save({});
+    document.querySelectorAll('input[type=checkbox]').forEach(b => { b.checked = false; b.closest('.item').classList.remove('checked'); });
+    updateProgress();
+  });
+</script>
+</body>
+</html>
